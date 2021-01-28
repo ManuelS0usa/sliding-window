@@ -3,7 +3,6 @@ from numpy import load, savez, array, arange, tile, hstack, vstack, random, dele
 
 class Cria_Lags:
 	
-
 	def varlag(self, data, lags):
 
 		'''
@@ -26,28 +25,8 @@ class Cria_Lags:
 		return data[tile(arange(maxlag,maxlag+N,1).reshape(N,1),(1,lags.size))-tile(lags,(N,1))]
 
 
-	# ---------------------------------------------
-
-
-	''' Normalização do dataset (Comprimir os dados dentro de um certo intervalo)
-
-		x - é um valor do dataset
-		m - é o valor minimo pertencente ao dataset
-		M - é o valor máximo pertencente ao dataset
-	'''
-
-	def scale(self,x,m,M):
-		return (x-m)/(M-m)
-
-
-	def unscale(self,x,m,M):
-		return x*(M-m)+m
-
-	
-	# --------------------------------------------- CRIA OS DATASETS DE TRAIN, TEST E VALIDATION
-
-
 	def finalmatrix_dividerand(self, matrix):
+		""" Build matrices spliting the dataset randomly shuffled. This removes the dataset temporal order from training purposes. """
 		
 		trainpoints = round(matrix.shape[0] * 0.60)
 		testepoints = round((matrix.shape[0] - trainpoints) * 0.50)
@@ -86,10 +65,8 @@ class Cria_Lags:
 		return {'training': finalmatrixtrain, 'testing': finalmatrixtest, 'validation': finalmatrixvalidation}
 
 
-		# return {'training': finalmatrixtrain, 'testing': finalmatrixtest, 'validation': matrix}
-		
-
 	def finalmatrix_divideblock(self, matrix):
+		""" Build matrices spliting the dataset by blocks. This keeps the dataset temporal order. """
 		
 		trainpoints = round(matrix.shape[0] * 0.60)
 		testepoints = round((matrix.shape[0] - trainpoints) * 0.50)
@@ -117,4 +94,18 @@ class Cria_Lags:
 				finalmatrixvalidation = vstack((finalmatrixvalidation,matrix[x,:].copy()))
 
 		return {'training': finalmatrixtrain, 'testing': finalmatrixtest, 'validation': finalmatrixvalidation}
+	
+		
+	''' Dataset normalization (compress data in a numeric range)
 
+		x - dataset value
+		m - minimum value in the dataset
+		M - maximum value in the dataset
+	'''
+
+	def scale(self,x,m,M):
+	    return (x-m)/(M-m)
+
+
+	def unscale(self,x,m,M):
+	    return x*(M-m)+m
